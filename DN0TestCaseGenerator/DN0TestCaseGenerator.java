@@ -43,9 +43,11 @@ public class DN0TestCaseGenerator {
 
             BufferedWriter processInputWriter = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
             writeIn(filename, processInputWriter);
+            processInputWriter.close();
 
             BufferedReader processOutputReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             writeOut(filename, processOutputReader);
+            processOutputReader.close();
         }
     }
 
@@ -76,7 +78,6 @@ public class DN0TestCaseGenerator {
         }
 
         fileWriter.close();
-        processOutputReader.close();
     }
 
     public static void writeIn(String filename, BufferedWriter processInputWriter) throws IOException {
@@ -99,6 +100,5 @@ public class DN0TestCaseGenerator {
         }
 
         fileWriter.close();
-        processInputWriter.close();
     }
 }
