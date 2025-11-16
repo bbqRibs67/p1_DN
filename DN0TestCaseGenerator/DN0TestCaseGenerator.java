@@ -13,7 +13,7 @@ public class DN0TestCaseGenerator {
     folder name je univerzalen: ./DN0x_Testi (treba nardit u naprej)
      */
     //------------------------------------
-    static String programPath = "./DN04/DN04_63250270.java";
+    static String programPath = "./DN03/DN03_63250270.java";
     static int number = 4;
     static int tests = 67;
     static int[][] inputRanges = {
@@ -29,25 +29,22 @@ public class DN0TestCaseGenerator {
     static int[][] continuousInputs = new int[continuousInputRanges.length][];
     //------------------------------------
 
+
     public static void main(String[] args) throws IOException {
-        String filename;
         new File("./DN0" + number + "_Testi").mkdirs();
-        for (int i = 0; i < tests; i++) {
-            filename =  "./DN0" + number + "_Testi/test" + ((i < 10) ? "0" : "") + i;
+
+        for (int i = 2; i < tests; i++) {
+            String filename =  "./DN0" + number + "_Testi/test" + ((i < 10) ? "0" : "") + i;
             System.out.println(filename);
+
             generateInputs();
 
             ProcessBuilder processBuilder = new ProcessBuilder("java", programPath);
             processBuilder.redirectErrorStream(true);
             Process process = processBuilder.start();
 
-            BufferedWriter processInputWriter = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
-            writeIn(filename, processInputWriter);
-            processInputWriter.close();
-
-            BufferedReader processOutputReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            writeOut(filename, processOutputReader);
-            processOutputReader.close();
+            writeInput(filename, process);
+            writeOutput(filename, process);
         }
     }
 
@@ -68,8 +65,9 @@ public class DN0TestCaseGenerator {
         return (int)(Math.random() * (high - low + 1)) + low;
     }
 
-    public static void writeOut(String filename, BufferedReader processOutputReader) throws IOException {
+    public static void writeOutput(String filename, Process process) throws IOException {
         FileWriter fileWriter = new FileWriter(filename + ".out");
+        BufferedReader processOutputReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
         String outputLine;
         while ((outputLine = processOutputReader.readLine()) != null) {
@@ -78,10 +76,12 @@ public class DN0TestCaseGenerator {
         }
 
         fileWriter.close();
+        processOutputReader.close();
     }
 
-    public static void writeIn(String filename, BufferedWriter processInputWriter) throws IOException {
+    public static void writeInput(String filename, Process process) throws IOException {
         FileWriter fileWriter = new FileWriter(filename + ".in");
+        BufferedWriter processInputWriter = new BufferedWriter(new OutputStreamWriter(process.getOutputStream()));
 
         for (int input : inputs) {
             fileWriter.write("" + input);
@@ -100,5 +100,6 @@ public class DN0TestCaseGenerator {
         }
 
         fileWriter.close();
+        processInputWriter.close();
     }
 }
