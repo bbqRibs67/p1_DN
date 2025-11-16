@@ -6,15 +6,16 @@ public class DN04_63250270 {
         int n = sc.nextInt();
         int k = sc.nextInt();
 
-        int[] v = new int[k];
+        int[] v = new int[2001];
         for (int i = 0; i < n; i++) {
             v[sc.nextInt()]++;
         }
 
+        int j;
         long r = 0;
         for (int i = 0; i < v.length; i++) {
-            int j = k - i;
-            if (j < v.length) {
+            j = k - i;
+            if (j < v.length && j >= 0) {
                 r += (long) v[i] * v[j];
             }
         }
