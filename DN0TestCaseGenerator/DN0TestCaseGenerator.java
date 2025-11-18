@@ -30,23 +30,40 @@ public class DN0TestCaseGenerator {
     //------------------------------------
 
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         new File("./DN0" + number + "_Testi").mkdirs();
 
+        Thread[] threads = new Thread[tests - 2];
+        int index = 0;
+
         for (int i = 2; i < tests; i++) {
-            String filename =  "./DN0" + number + "_Testi/test" + ((i < 10) ? "0" : "") + i;
-            System.out.println(filename);
+            final int testIndex = i;
+            threads[index] = new Thread(() -> {
+                try {
+                    String filename = "./DN0" + number + "_Testi/test" + ((testIndex < 10) ? "0" : "") + testIndex;
+                    System.out.println(filename);
 
-            generateInputs();
+                    generateInputs();
 
-            ProcessBuilder processBuilder = new ProcessBuilder("java", programPath);
-            processBuilder.redirectErrorStream(true);
-            Process process = processBuilder.start();
+                    ProcessBuilder processBuilder = new ProcessBuilder("java", programPath);
+                    processBuilder.redirectErrorStream(true);
+                    Process process = processBuilder.start();
 
-            writeInput(filename, process);
-            writeOutput(filename, process);
+                    writeInput(filename, process);
+                    writeOutput(filename, process);
+
+                } catch (IOException ignored) {}
+            });
+            threads[index].start();
+            index++;
+        }
+
+        for (Thread t : threads) {
+            t.join();
         }
     }
+
+
 
     public static void generateInputs() {
         for (int i = 0; i < inputs.length; i++) {
@@ -92,8 +109,8 @@ public class DN0TestCaseGenerator {
 
         for (int[] continuousInput : continuousInputs) {
             for (int i : continuousInput) {
-                fileWriter.write("" + i + " ");
-                processInputWriter.write("" + i + " ");
+                fileWriter.write(i + " ");
+                processInputWriter.write(i + " ");
             }
             fileWriter.write("\n");
             processInputWriter.write("\n");
